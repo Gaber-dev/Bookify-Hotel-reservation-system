@@ -1,0 +1,35 @@
+@startuml
+!define TABLE(name,desc) class name as "desc" << (T,#FFAAAA) >>
+TABLE(Users, "Users\nPK Id")
+TABLE(Roles, "Roles\nPK Id")
+TABLE(UserRoles, "UserRoles\nPK (UserId,RoleId)")
+Users "1" -- "*" UserRoles
+Roles "1" -- "*" UserRoles
+
+TABLE(Hotels, "Hotels\nPK Id")
+TABLE(Addresses, "Addresses\nPK Id\nFK HotelId")
+Hotels "1" -- "0..1" Addresses
+
+TABLE(Amenities, "Amenities\nPK Id")
+TABLE(HotelAmenities, "HotelAmenities\nPK (HotelId,AmenityId)")
+Hotels "1" -- "*" HotelAmenities
+Amenities "1" -- "*" HotelAmenities
+
+TABLE(RoomTypes, "RoomTypes\nPK Id\nFK HotelId")
+Hotels "1" -- "*" RoomTypes
+
+TABLE(RoomInventory, "RoomInventory\nPK Id\nFK RoomTypeId")
+RoomTypes "1" -- "*" RoomInventory
+
+TABLE(Images, "Images\nPK Id\nFK HotelId|RoomTypeId")
+Hotels "1" -- "*" Images
+RoomTypes "1" -- "*" Images
+
+TABLE(Reservations, "Reservations\nPK Id\nFK UserId\nFK HotelId\nFK RoomTypeId")
+Users "1" -- "*" Reservations
+Hotels "1" -- "*" Reservations
+RoomTypes "1" -- "*" Reservations
+
+TABLE(Payments, "Payments\nPK Id\nFK ReservationId")
+Reservations "1" -- "0..*" Payments
+@enduml

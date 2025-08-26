@@ -1,0 +1,113 @@
+
+# 2 — Entity Relationship Diagram (ERD)
+
+Below are **SQL DDL** statements for a normalized starting schema. 
+- Copy into `docs/schema.sql` or `src/Database/Schema.sql`.
+
+```sql
+-- Users and Roles (ASP.NET Identity integration assumed; simplified here)
+CREATE TABLE [Users] (
+  [Id] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
+  [UserName] NVARCHAR(256) NOT NULL,
+  [Email] NVARCHAR(256),
+  [PasswordHash] NVARCHAR(MAX),
+  [CreatedAt] DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+  [IsEmailConfirmed] BIT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE [Roles] (
+  [Id] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
+  [Name] NVARCHAR(100) NOT NULL
+);
+
+CREATE TABLE [UserRoles] (
+  [UserId] UNIQUEIDENTIFIER NOT NULL REFERENCES Users(Id) ON DELETE CASCADE,
+  [RoleId] UNIQUEIDENTIFIER NOT NULL REFERENCES Roles(Id) ON DELETE CASCADE,
+  PRIMARY KEY (UserId, RoleId)
+);
+
+-- Hotel and address
+CREATE TABLE [Hotels] (
+  [Id] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
+  [Name] NVARCHAR(200) NOT NULL,
+  [Description] NVARCHAR(MAX),
+  [Rating] DECIMAL(2,1) NULL,
+  [CreatedAt] DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
+);
+
+CREATE TABLE [Addresses] (
+  [Id] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
+  [HotelId] UNIQUEIDENTIFIER NOT NULL REFERENCES Hotels(Id) ON DELETE CASCADE,
+  [Line1] NVARCHAR(300),
+  [City] NVARCHAR(100),
+  [State] NVARCHAR(100),
+  [Country] NVARCHAR(100),
+  [PostalCode] NVARCHAR(20)
+);
+
+-- Amenities (many-to-many with hotels and rooms)
+CREATE TABLE [Amenities] (
+  [Id] INT IDENTITY PRIMARY KEY,
+  [Name] NVARCHAR(100) NOT NULL
+);
+
+CREATE TABLE [HotelAmenities] (
+  [HotelId] UNIQUEIDENTIFIER NOT NULL REFERENCES Hotels(Id) ON DELETE CASCADE,
+  [AmenityId] INT NOT NULL REFERENCES Amenities(Id) ON DELETE CASCADE,
+  PRIMARY KEY (HotelId, AmenityId)
+);
+
+-- Room types and inventory
+CREATE TABLE [RoomTypes] (
+  [Id] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
+  [HotelId] UNIQUEIDENTIFIER NOT NULL REFERENCES Hotels(Id) ON DELETE CASCADE,
+  [Name] NVARCHAR(150) NOT NULL,
+  [MaxOccupancy] INT NOT NULL,
+  [BasePrice] DECIMAL(12,2) NOT NULL,
+  [Description] NVARCHAR(MAX)
+);
+
+-- RoomInventory describes actual physical room instances or counts per date
+CREATE TABLE [RoomInventory] (
+  [Id] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
+  [RoomTypeId] UNIQUEIDENTIFIER NOT NULL REFERENCES RoomTypes(Id) ON DELETE CASCADE,
+  [Date] DATE NOT NULL,
+  [AvailableCount] INT NOT NULL
+);
+
+-- Images for hotels/room types
+CREATE TABLE [Images] (
+  [Id] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
+  [HotelId] UNIQUEIDENTIFIER NULL REFERENCES Hotels(Id) ON DELETE CASCADE,
+  [RoomTypeId] UNIQUEIDENTIFIER NULL REFERENCES RoomTypes(Id) ON DELETE CASCADE,
+  [Url] NVARCHAR(1000) NOT NULL,
+  [AltText] NVARCHAR(256)
+);
+
+-- Reservations
+CREATE TABLE [Reservations] (
+  [Id] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
+  [UserId] UNIQUEIDENTIFIER NOT NULL REFERENCES Users(Id),
+  [HotelId] UNIQUEIDENTIFIER NOT NULL REFERENCES Hotels(Id),
+  [RoomTypeId] UNIQUEIDENTIFIER NOT NULL REFERENCES RoomTypes(Id),
+  [CheckIn] DATE NOT NULL,
+  [CheckOut] DATE NOT NULL,
+  [Guests] INT NOT NULL,
+  [Status] NVARCHAR(50) NOT NULL, -- Pending, Confirmed, Cancelled, Completed
+  [TotalAmount] DECIMAL(12,2) NOT NULL,
+  [Currency] NVARCHAR(10) NOT NULL DEFAULT 'USD',
+  [CreatedAt] DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
+);
+
+-- Payments
+CREATE TABLE [Payments] (
+  [Id] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
+  [ReservationId] UNIQUEIDENTIFIER NOT NULL REFERENCES Reservations(Id) ON DELETE CASCADE,
+  [Provider] NVARCHAR(100),
+  [ProviderTransactionId] NVARCHAR(200),
+  [Amount] DECIMAL(12,2) NOT NULL,
+  [Currency] NVARCHAR(10) NOT NULL,
+  [Status] NVARCHAR(50) NOT NULL, -- Pending, Success, Failed, Refunded
+  [ProcessedAt] DATETIME2
+);
+```

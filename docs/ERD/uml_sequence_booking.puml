@@ -1,0 +1,30 @@
+@startuml
+actor Customer
+participant "Web UI (Razor)" as UI
+participant "ReservationController" as Controller
+participant "ReservationService" as Service
+participant "RoomInventoryRepo" as Inventory
+participant "PaymentProvider" as Payment
+participant "EmailService" as Email
+Customer -> UI: Choose hotel & room, dates
+UI -> Controller: POST /api/reservations {payload}
+Controller -> Service: CreateReservation(payload)
+Service -> Inventory: CheckAndReserve(roomTypeId, checkIn, checkOut)
+alt inventory available
+  Inventory --> Service: reserved
+  Service -> Payment: Charge(paymentInfo)
+  alt payment success
+    Payment --> Service: success
+    Service -> Controller: reservationConfirmed
+    Controller -> Email: SendConfirmation()
+    Controller --> UI: 201 Created + reservation details
+  else payment failed
+    Payment --> Service: failed
+    Service -> Inventory: ReleaseReservation(...)
+    Controller --> UI: 402 Payment Required
+  end
+else inventory not available
+  Inventory --> Service: not available
+  Controller --> UI: 409 Conflict
+end
+@enduml
