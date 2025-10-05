@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Color Tokens - Dark Professional Theme */
+  --color-background: #0a0a0a;
+  --color-foreground: #ededed;
+
+  --color-card: #141414;
+  --color-card-foreground: #ededed;
+
+  --color-popover: #1a1a1a;
+  --color-popover-foreground: #ededed;
+
+  --color-primary: #3b82f6;
+  --color-primary-foreground: #ffffff;
+
+  --color-secondary: #1e293b;
+  --color-secondary-foreground: #e2e8f0;
+
+  --color-muted: #1e1e1e;
+  --color-muted-foreground: #a1a1a1;
+
+  --color-accent: #0ea5e9;
+  --color-accent-foreground: #ffffff;
+
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+
+  --color-success: #10b981;
+  --color-success-foreground: #ffffff;
+
+  --color-warning: #f59e0b;
+  --color-warning-foreground: #ffffff;
+
+  --color-border: #262626;
+  --color-input: #262626;
+  --color-ring: #3b82f6;
+
+  --radius: 0.5rem;
+
+  /* Font families */
+  --font-sans: ui-sans-serif, system-ui, sans-serif;
+}
+
+* {
+  border-color: theme("colors.border");
+}
+
+body {
+  background-color: theme("colors.background");
+  color: theme("colors.foreground");
+  font-feature-settings: "rlig" 1, "calt" 1;
+}

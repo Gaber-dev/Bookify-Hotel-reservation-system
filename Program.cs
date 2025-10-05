@@ -36,7 +36,26 @@ app.UseHttpsRedirection();
 app.UseStaticFiles(); // ✅ required for identity static content
 
 app.UseRouting();
+
+
+
 app.UseAuthentication(); // ✅ added
+
+
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy =>
+                      {
+                          policy.WithOrigins("http://localhost:5173") // Vite frontend
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
+                      });
+});
+app.UseCors(MyAllowSpecificOrigins);
+
 app.UseAuthorization();
 
 // Default route
