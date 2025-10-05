@@ -1,0 +1,59 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">🏨 Hotel Management Dashboard</h2>
+
+    <div class="row text-center">
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5>Total Rooms</h5>
+                    <h3>@ViewData["TotalRooms"]</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm bg-success text-white">
+                <div class="card-body">
+                    <h5>Available Rooms</h5>
+                    <h3>@ViewData["AvailableRooms"]</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm bg-info text-white">
+                <div class="card-body">
+                    <h5>Total Bookings</h5>
+                    <h3>@ViewData["TotalBookings"]</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm bg-warning">
+                <div class="card-body">
+                    <h5>Total Employees</h5>
+                    <h3>@ViewData["TotalEmployees"]</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm bg-secondary text-white">
+                <div class="card-body">
+                    <h5>Total Payments</h5>
+                    <h3>$@ViewData["TotalPayments"]</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm bg-primary text-white">
+                <div class="card-body">
+                    <h5>Total Revenue</h5>
+                    <h3>$@ViewData["TotalRevenue"]</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
