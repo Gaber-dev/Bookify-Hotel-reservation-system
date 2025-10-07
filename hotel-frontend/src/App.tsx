@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { Routes, Route, Navigate } from "react-router-dom"
 import { useState, useEffect } from "react"
@@ -12,45 +12,57 @@ import BillingPage from "./pages/BillingPage"
 import SettingsPage from "./pages/SettingsPage"
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+    const [isAuthenticated, setIsAuthenticated] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    // Check if user is authenticated (e.g., check localStorage for token)
-    const token = localStorage.getItem("authToken")
-    setIsAuthenticated(!!token)
-  }, [])
+    useEffect(() => {
+        const token = localStorage.getItem("authToken")
+        setIsAuthenticated(!!token)
+        setIsLoading(false)
+    }, [])
 
-  const handleLogin = () => {
-    setIsAuthenticated(true)
-  }
+    const handleLogin = () => {
+        setIsAuthenticated(true)
+    }
 
-  const handleLogout = () => {
-    localStorage.removeItem("authToken")
-    setIsAuthenticated(false)
-  }
+    const handleLogout = () => {
+        localStorage.removeItem("authToken")
+        setIsAuthenticated(false)
+    }
 
-  if (!isAuthenticated) {
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground">
+                <div className="relative w-12 h-12 mb-4">
+                    <div className="absolute w-full h-full border-4 border-primary/30 rounded-full animate-spin border-t-primary"></div>
+                </div>
+                <p className="text-sm text-muted-foreground tracking-wide">Loading your dashboard...</p>
+            </div>
+        )
+    }
+
+    if (!isAuthenticated) {
+        return (
+            <Routes>
+                <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
+                <Route path="*" element={<Navigate to="/login" replace />} />
+            </Routes>
+        )
+    }
+
     return (
-      <Routes>
-        <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
+        <Routes>
+            <Route path="/" element={<DashboardLayout onLogout={handleLogout} />}>
+                <Route index element={<HomePage />} />
+                <Route path="rooms" element={<RoomsPage />} />
+                <Route path="bookings" element={<BookingsPage />} />
+                <Route path="customers" element={<CustomersPage />} />
+                <Route path="billing" element={<BillingPage />} />
+                <Route path="settings" element={<SettingsPage />} />
+            </Route>
+            <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
     )
-  }
-
-  return (
-    <Routes>
-      <Route path="/" element={<DashboardLayout onLogout={handleLogout} />}>
-        <Route index element={<HomePage />} />
-        <Route path="rooms" element={<RoomsPage />} />
-        <Route path="bookings" element={<BookingsPage />} />
-        <Route path="customers" element={<CustomersPage />} />
-        <Route path="billing" element={<BillingPage />} />
-        <Route path="settings" element={<SettingsPage />} />
-      </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
-  )
 }
 
 export default App

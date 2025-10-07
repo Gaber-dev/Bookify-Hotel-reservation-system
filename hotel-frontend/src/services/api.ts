@@ -1,5 +1,7 @@
 // Central API service for all HTTP requests
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api"
+
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api"
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://localhost:5001/api"
 
 interface ApiResponse<T> {
   data?: T
